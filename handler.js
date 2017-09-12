@@ -7,8 +7,12 @@ function home(req, res) {
 }
 
 function apiWebhook(req, res) {
-	console.log("REQUEST:  ", req.body)
-	res.send("API response from the webhook");
+	console.log("REQUEST:  ", req.body);
+	let resp = {
+		speech: "API response from the webhook",
+		displayText: "API response from the webhook"
+	}
+	res.json(resp);
 }
 
 
