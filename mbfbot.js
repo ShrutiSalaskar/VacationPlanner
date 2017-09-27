@@ -53,41 +53,31 @@ var bot = new builder.UniversalBot(connector, function (session) {
 			var cityId;
 			console.log(data.fulfillment.messages);
 
-			//		switch (data.action) {
-			//		    case 'smalltalk.greetings.hello':
-			//		    case 'book.hotel':
-			//		    case 'bookhotel.bookhotel-yes':
-			//			session.send(data.fulfillment.speech);
-			//			break;
-			//		    case 1:
-			//			day = "Monday";
-			//			break;
-			//		    case 2:
-			//			day = "Tuesday";
-			//			break;
-			//		    case 3:
-			//			day = "Wednesday";
-			//			break;
-			//		    case 4:
-			//			day = "Thursday";
-			//			break;
-			//		    case 5:
-			//			day = "Friday";
-			//			break;
-			//		    default:
 			var checkInDate = 'check-in';
 			console.log("RES::::::::::::::::::;", data.fulfillment.speech)
 			if (data.fulfillment.speech == 'api response') {
 				console.log("inside if::::::::::::::::::;", data.fulfillment.speech, data.parameters.destination)
-				autoComplete(data.parameters.destination);
-				var params = {
-					locationId: cityId,
-					checkIn: data.parameters.checkInDate,
-					checkOut: data.parameters.check-out,
-					rooms: '1',
-					guests: data.parameters.guests
-				};
-				console.log("params", params);
+				wego.locationSearch(data.parameters.destination)
+				.then((locationRes) => {
+					console.log('locationRes: ', locationRes);
+						var params = {
+							locationId: locationRes.locations[0].id,
+							checkIn: data.parameters["check-in"],
+							checkOut: data.parameters["check-out"],
+							rooms: '1',
+							guests: data.parameters.guests
+						};
+						return wego.hotelSearch(params);
+				}).then(result =>{
+					console.log("wego result", result);
+					session.send("response from inside location" + data.fulfillment.speech);
+				}).catch(err => {
+
+					console.log("wego error", err);
+					session.send("ERROR response from inside location" + data.fulfillment.speech);
+				})
+				
+				// console.log("params", params);
 			} else if (data.fulfillment && data.fulfillment.speech) {
 
 				session.send(data.fulfillment.speech);
@@ -95,25 +85,9 @@ var bot = new builder.UniversalBot(connector, function (session) {
 				session.send("Sorry!! I could not understand what you said");
 			}
 
-			//		}
-			//session.send("success case: %s", session.message.text);
 		})
 		.catch(err => {
 			console.log("inside error");
-			session.send("You said: %s", session.message.text);
+			session.send("ERRROR :You said: %s", session.message.text);
 		})
 });
-
-const autoComplete = (location) => {
-	console.log("INSIDE autocomplete::::::::::::", location)
-	wego.autocomplete(location, 'en')
-        .then((locationRes) => {
-            console.log('locationRes: ', locationRes);
-                cityId = locationRes[0].lid;
-                city = locationRes[0].n;
-        })
-        .catch((err) => {
-            //TODO: need to handle error condition
-            console.log(err);
-        });
-}

@@ -1,6 +1,22 @@
 const rp = require('request-promise');
-
 const util = require('util');
+
+const config = {
+    apiKey: '56cbd399e334616a2bb4',
+    tsCode: 'fdb21',
+    locale: 'en', //Default locale for Wego
+    url: 'http://api.wego.com/hotels/api',
+    flightURL: 'http://api.wego.com/flights/api/k/2/',
+    airlineLogo: 'http://0.omg.io/wego/image/upload/c_fit,w_200,h_70/flights/airlines_rectangular/',
+    airportCodeURL: (locale, query) => `https://srv.wego.com/places/search?query=${query}&language=${locale}&min_airports=1`,
+    autocompleteURL: 'http://www.wego.co.in/%s/hotels/api/autocomplete/locations/%s.js',
+    //autocompleteURL : 'https://www.wego.co.in/en/flights/api/autocomplete/16/locations/6/%s.js',
+    headers: {
+        'cache-control': 'no-cache',
+        'accept': 'application/json',
+        'content-type': 'application/json'
+    }
+};
 
 const locationSearch = (name) => {
     var optionsLocationSearch = {
@@ -27,9 +43,8 @@ const getSearchId = (params) => {
             rooms: params.rooms || 1,
             guests: params.guests || 1,
             user_ip: 'direct',
-            hotel_id: params.hotelId,
-            api_key: '56cbd399e334616a2bb4',
-            ts_code: 'fdb21'
+            api_key: config.apiKey,
+            ts_code: config.tsCode
         },
         headers: config.headers
     };
@@ -40,7 +55,7 @@ const getSearchId = (params) => {
 }
 
 const getSearchResults = (params) => {
-    console.log('in getSearchResults::::::::::::::::::::::::::', params);
+    console.log('in getSearchResults::::::::::::::::::::::::::',params);
     var optionsHotelDetails = {
         method: 'GET',
         url: config.url + '/search/' + params.searchId,
@@ -68,9 +83,9 @@ const getHotelDetails = (params) => {
         url: config.url + '/search/show/' + params.searchId,
         qs: {
             hotel_id: params.hotelId,
-            api_key: '56cbd399e334616a2bb4',
-            ts_code: 'fdb21',
-            locale: 'en'
+            api_key: config.apiKey,
+            ts_code: config.tsCode,
+            locale: params.locale || config.locale
         },
         headers: config.headers
     };
@@ -96,11 +111,11 @@ const getRedirect = (params) => {
 }
 
 const hotelSearch = (params) => {
-    console.log('in commmmmm:::::hotelSearch', params);
+    console.log('in commmmmm:::::hotelSearch',params);
     if (params.sort) {
         var sort = params.sort;
     }
-
+    
     return getSearchId(params).then(searchId => {
         return new Promise((resolve, reject) => {
             return setTimeout(() => {
@@ -115,17 +130,16 @@ const hotelSearch = (params) => {
 };
 
 const autocomplete = (cityName, locale) => {
-    locale = 'en';
-    if (locale === 'en') {
-        cityName = cityName.toString().trim().replace(/(,\s|\s|,|\s,|\s,\s)/g, '_');
-    } 
+    locale = locale || config.locale;
+    if(locale === 'en') {
+        cityName = cityName.toString().trim().replace(/(,\s|\s|,|\s,|\s,\s)/g,'_');
+    } else {
+        cityName = encodeURIComponent(cityName);
+    }
     const autoCompleteParams = {
         method: 'GET',
-        url: util.format('http://www.wego.co.in/%s/hotels/api/autocomplete/locations/%s.js', 'en', cityName),
-        headers: [{
-            accept: "application/json",
-            "content-type": "application/json"
-        }]
+        url: util.format(config.autocompleteURL, locale || config.locale, cityName),
+        headers: config.headers
     };
 
     return rp(autoCompleteParams)
@@ -133,7 +147,7 @@ const autocomplete = (cityName, locale) => {
             // const jsonData = JSON.parse(data)["r"];
             // if(jsonData.length > 0){
             //     return Promise.resolve(JSON.parse(data)['r']);
-            if (JSON.parse(data)[0].n !== 'No matching locations') {
+            if(JSON.parse(data)[0].n !== 'No matching locations'){
                 return Promise.resolve(JSON.parse(data));
             } else {
                 return Promise.resolve(null);
@@ -147,5 +161,5 @@ module.exports = {
     getSearchResults: getSearchResults,
     getHotelDetails: getHotelDetails,
     getRedirect: getRedirect,
-    autocomplete: autocomplete
+    autocomplete : autocomplete
 };
