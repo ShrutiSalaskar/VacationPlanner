@@ -4,7 +4,7 @@
   "description": "hotel and flight booking bot backend",
   "main": "index.js",
   "scripts": {
-    "start" :"node index.js",
+    "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -17,6 +17,7 @@
   "dependencies": {
     "bcrypt": "^1.0.2",
     "body-parser": "^1.16.1",
+    "botbuilder": "^3.10.2",
     "cookie-parser": "^1.4.3",
     "cors": "^2.8.1",
     "express": "^4.14.1",
@@ -25,6 +26,7 @@
     "multer": "^1.3.0",
     "node-uuid": "^1.4.7",
     "redis": "^2.6.5",
+    "restify": "^6.0.1",
     "socket.io": "^1.7.3",
     "twilio": "^2.11.1",
     "ws": "^2.1.0"
