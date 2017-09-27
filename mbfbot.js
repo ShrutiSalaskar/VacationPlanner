@@ -43,28 +43,36 @@ var bot = new builder.UniversalBot(connector, function (session) {
 		//console.log(data);
 
 			console.log(data.fulfillment.messages);
-		switch (data.action) {
-		    case 'smalltalk.greetings.hello':
+//		switch (data.action) {
+//		    case 'smalltalk.greetings.hello':
+//		    case 'book.hotel':
+//		    case 'bookhotel.bookhotel-yes':
+//			session.send(data.fulfillment.speech);
+//			break;
+//		    case 1:
+//			day = "Monday";
+//			break;
+//		    case 2:
+//			day = "Tuesday";
+//			break;
+//		    case 3:
+//			day = "Wednesday";
+//			break;
+//		    case 4:
+//			day = "Thursday";
+//			break;
+//		    case 5:
+//			day = "Friday";
+//			break;
+//		    default:
+			if(data.fulfillment && data.fulfillment.speech){
+
 			session.send(data.fulfillment.speech);
-			break;
-		    case 1:
-			day = "Monday";
-			break;
-		    case 2:
-			day = "Tuesday";
-			break;
-		    case 3:
-			day = "Wednesday";
-			break;
-		    case 4:
-			day = "Thursday";
-			break;
-		    case 5:
-			day = "Friday";
-			break;
-		    case 6:
-			day = "Saturday";
-		}
+			} else{			
+			session.send("Sorry!! I could not understand what you said");
+			}
+
+//		}
     		//session.send("success case: %s", session.message.text);
 	})
 	.catch(err =>{
