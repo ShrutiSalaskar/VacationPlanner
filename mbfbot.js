@@ -2,20 +2,27 @@ var restify = require('restify');
 var builder = require('botbuilder');
 var apiai = require('apiai');
 var app = apiai('72501e79bf5a47cd84fe7cb464187e5e');
-var day;
-var intentParser = function(text){
+
+var intentParser = function(session){
     return new Promise(function(resolve, reject){
-        var request = app.textRequest(text, {sessionId : 'cf3f299e-f042-4c27-9ce7-473af706c492'});
+	session.conversationid = session.message.address.conversation.id;
+	var options = {
+		sessionId : session.conversationid,
+
+	};
+	//if(session.apiresponse){
+	//	options.contexts =session.apiresponse.result.contexts;
+	//}
+console.log(options);
+        var request = app.textRequest(session.message.text, options);
 
         request.on('response', function(response) {
-console.log(response)
-            //var result = {};
-            //result.result = response.result.parameters;
-            //result.intentName = response.result.metadata.intentName;
-            resolve(response.result);
+		console.log(response)
+		session.apiresponse = response;
+        	resolve(response.result);
         }).on('error', function(error) {
-            console.log(error);
-            reject(error);
+        	console.log(error);
+        	reject(error);
         });
         request.end();
     });
@@ -38,7 +45,8 @@ server.post('/api/messages', connector.listen());
 
 // Receive messages from the user and respond by echoing each message back (prefixed with 'You said:')
 var bot = new builder.UniversalBot(connector, function (session) {
-	intentParser(session.message.text)
+console.log(session.message.address.conversation);
+	intentParser(session)
 	.then(data => {
 		//console.log(data);
 
