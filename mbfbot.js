@@ -53,7 +53,7 @@ var bot = new builder.UniversalBot(connector, function (session) {
 			var cityId;
 			console.log(data.fulfillment.messages);
 
-			var checkInDate = 'check-in';
+			
 			console.log("RES::::::::::::::::::;", data.fulfillment.speech)
 			if (data.fulfillment.speech == 'api response') {
 				console.log("inside if::::::::::::::::::;", data.fulfillment.speech, data.parameters.destination)
@@ -70,7 +70,8 @@ var bot = new builder.UniversalBot(connector, function (session) {
 						return wego.hotelSearch(params);
 				}).then(result =>{
 					console.log("wego result", result);
-					session.send("response from inside location" + data.fulfillment.speech);
+					// session.send("Looking for some good hotel options in "+data.parameters.destination+ " for you. It'll take just a few seconds.")
+					session.send("Great! I've found a hotel named " + result.hotels[0].name.toLowerCase() + ", " + result.hotels[0].address+" at price " +result.hotels[0].room_rates[0].currency_code + " " + result.hotels[0].room_rates[0].price_str +'.' );
 				}).catch(err => {
 
 					console.log("wego error", err);
