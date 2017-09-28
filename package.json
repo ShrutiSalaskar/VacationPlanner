@@ -28,7 +28,7 @@
     // "node-uuid": "^1.4.7",
     // "redis": "^2.6.5",
     "request-promise": "^4.2.2",
-    "restify": "^6.0.1",
+    "restify": "^6.0.1"
     // "socket.io": "^1.7.3",
     // "twilio": "^2.11.1",
     // "ws": "^2.1.0"
