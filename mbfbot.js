@@ -6,9 +6,9 @@ var app = apiai('72501e79bf5a47cd84fe7cb464187e5e');
 
 var intentParser = function (session) {
 	return new Promise(function (resolve, reject) {
-		session.conversationid = session.message.address.conversation.id;
+		session.conversationid = session.message.address.conversation.id.slice(-36);
 		var options = {
-			sessionId: session.conversationid,
+			sessionId: session.conversationid
 
 		};
 		//if(session.apiresponse){
